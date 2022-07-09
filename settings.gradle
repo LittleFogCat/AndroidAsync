@@ -1,2 +1,3 @@
-include 'AndroidAsync', 'AndroidAsyncSample', 'AndroidAsyncStetho'
+rootProject.name = "AndroidAsync"
 
+include 'AndroidAsync'

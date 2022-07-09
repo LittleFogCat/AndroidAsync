@@ -1,29 +1,11 @@
 apply plugin: 'com.android.library'
 
 android {
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-
-            jniLibs.srcDirs = ['libs/']
-
-            java.srcDirs=['src/'
-//                          , '../conscrypt/'
-//                          , '../compat/'
-            ]
-        }
-        androidTest.java.srcDirs=['test/src/']
-        androidTest.res.srcDirs=['test/res/']
-        androidTest.assets.srcDirs=['test/assets/']
-    }
-
-    lintOptions {
-        abortOnError false
-    }
+    compileSdk 31
 
     defaultConfig {
-        targetSdkVersion 30
-        minSdkVersion 21
+        targetSdk 31
+        minSdk 17
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -33,21 +15,36 @@ android {
         targetCompatibility 1.8
     }
 
-    compileSdkVersion 30
-    buildToolsVersion '30.0.2'
+    sourceSets {
+//        main {
+//            manifest.srcFile 'AndroidManifest.xml'
+//
+//            jniLibs.srcDirs = ['libs/']
+//
+//            java.srcDirs = ['src/'
+////                          , '../conscrypt/'
+////                          , '../compat/'
+//            ]
+//        }
 
-    dependencies {
-        // this is only necessary to get compilation working for self signed certificates. dependency isn't added.
-        compileOnly group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.60'
-        compileOnly group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.60'
+        androidTest.res.srcDirs = ['test/res/']
+        androidTest.assets.srcDirs = ['test/assets/']
+    }
 
-
-        testImplementation 'junit:junit:4.12'
-        androidTestImplementation 'com.android.support.test:runner:1.0.2'
-        androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-        // for when i wanna test this against gms conscrypt
-        androidTestImplementation 'com.google.android.gms:play-services-base:17.0.0'
+    lintOptions {
+        abortOnError false
     }
 }
 
-apply from: 'maven.gradle'
+dependencies {
+    // this is only necessary to get compilation working for self signed certificates. dependency isn't added.
+    compileOnly group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.60'
+    compileOnly group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.60'
+
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // for when i wanna test this against gms conscrypt
+    androidTestImplementation 'com.google.android.gms:play-services-base:17.0.0'
+}
