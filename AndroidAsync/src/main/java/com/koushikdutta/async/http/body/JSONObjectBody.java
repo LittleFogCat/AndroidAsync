@@ -8,7 +8,10 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.AsyncHttpRequest;
 import com.koushikdutta.async.parser.JSONArrayParser;
 import com.koushikdutta.async.parser.JSONObjectParser;
+import com.koushikdutta.async.parser.StringParser;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JSONObjectBody implements AsyncHttpRequestBody<Object> {
@@ -25,16 +28,23 @@ public class JSONObjectBody implements AsyncHttpRequestBody<Object> {
 
     @Override
     public void parse(DataEmitter emitter, final CompletedCallback completed) {
-        new JSONObjectParser().parse(emitter).setCallback((e, result) -> {
-            if (e != null) {
-                new JSONArrayParser().parse(emitter).setCallback((e1, result1) -> {
-                    json = result1;
-                    completed.onCompleted(e1);
-                });
-            } else {
-                json = result;
-                completed.onCompleted(null);
+        new StringParser().parse(emitter).setCallback((e, result) -> {
+            if (e == null && result != null) {
+                if (result.startsWith("[")) {
+                    try {
+                        json = new JSONArray(result);
+                    } catch (JSONException ex) {
+                        ex.printStackTrace();
+                    }
+                } else  {
+                    try {
+                        json = new JSONObject(result);
+                    } catch (JSONException ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
+            completed.onCompleted(e);
         });
     }
 
