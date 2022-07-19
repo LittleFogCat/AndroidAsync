@@ -59,3 +59,17 @@ task androidSourcesJar(type: Jar) {
 artifacts {
     archives androidSourcesJar
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.littlefogcat'
+                artifactId = 'AndroidAsync'
+                version = '1.0.1'
+                artifact androidSourcesJar
+            }
+        }
+    }
+}
