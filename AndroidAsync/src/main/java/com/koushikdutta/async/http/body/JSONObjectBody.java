@@ -6,16 +6,18 @@ import com.koushikdutta.async.Util;
 import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.AsyncHttpRequest;
+import com.koushikdutta.async.parser.JSONArrayParser;
 import com.koushikdutta.async.parser.JSONObjectParser;
 
 import org.json.JSONObject;
 
-public class JSONObjectBody implements AsyncHttpRequestBody<JSONObject> {
+public class JSONObjectBody implements AsyncHttpRequestBody<Object> {
     public JSONObjectBody() {
     }
-    
+
     byte[] mBodyBytes;
-    JSONObject json;
+    Object json;
+
     public JSONObjectBody(JSONObject json) {
         this();
         this.json = json;
@@ -23,11 +25,15 @@ public class JSONObjectBody implements AsyncHttpRequestBody<JSONObject> {
 
     @Override
     public void parse(DataEmitter emitter, final CompletedCallback completed) {
-        new JSONObjectParser().parse(emitter).setCallback(new FutureCallback<JSONObject>() {
-            @Override
-            public void onCompleted(Exception e, JSONObject result) {
+        new JSONObjectParser().parse(emitter).setCallback((e, result) -> {
+            if (e != null) {
+                new JSONArrayParser().parse(emitter).setCallback((e1, result1) -> {
+                    json = result1;
+                    completed.onCompleted(e1);
+                });
+            } else {
                 json = result;
-                completed.onCompleted(e);
+                completed.onCompleted(null);
             }
         });
     }
@@ -56,7 +62,7 @@ public class JSONObjectBody implements AsyncHttpRequestBody<JSONObject> {
     public static final String CONTENT_TYPE = "application/json";
 
     @Override
-    public JSONObject get() {
+    public Object get() {
         return json;
     }
 }
